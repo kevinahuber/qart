@@ -344,7 +344,10 @@ wss.on('connection', ws => {
       const width = msg.image.width ?? null;
       const height = msg.image.height ?? null;
 
-      const relPath = `sessions/${slug}/reference.jpg`;
+      // Delete old reference image if it changed
+      if (session.image_path) deleteFile(session.image_path);
+
+      const relPath = `sessions/${slug}/reference-${Date.now()}.jpg`;
       const saved = saveDataUrl(msg.image.dataUrl, relPath);
       if (!saved) return;
 

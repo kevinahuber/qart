@@ -181,7 +181,20 @@ export function renderAdmin(container) {
   fileInput.className = 'admin-file';
   form.appendChild(fileInput);
 
-  // Preview canvas with grid overlay
+  // Current reference image display
+  const currentImg = getImage();
+  const currentRefWrap = document.createElement('div');
+  currentRefWrap.className = 'admin-preview-wrap';
+  currentRefWrap.hidden = !currentImg?.dataUrl;
+
+  const currentRefImg = document.createElement('img');
+  currentRefImg.className = 'admin-preview';
+  currentRefImg.alt = 'Current reference image';
+  if (currentImg?.dataUrl) currentRefImg.src = currentImg.dataUrl;
+  currentRefWrap.appendChild(currentRefImg);
+  form.appendChild(currentRefWrap);
+
+  // Preview canvas with grid overlay (shown after new file is selected)
   const previewWrap = document.createElement('div');
   previewWrap.className = 'admin-preview-wrap';
   previewWrap.hidden = true;
@@ -234,7 +247,7 @@ export function renderAdmin(container) {
   emptyInput.className = 'admin-number';
   emptyInput.min = '0';
   emptyInput.max = '999';
-  emptyInput.value = '5';
+  emptyInput.value = '2';
   emptyInput.setAttribute('aria-label', 'Number of slots to leave empty');
   seedSection.appendChild(emptyInput);
 
@@ -381,6 +394,7 @@ export function renderAdmin(container) {
     if (!file) return;
     ({ dataUrl: processedDataUrl, width: processedWidth, height: processedHeight } = await resizeImage(file, 800));
     submitBtn.disabled = false;
+    currentRefWrap.hidden = true;
     drawPreview();
   });
 
@@ -409,7 +423,12 @@ export function renderAdmin(container) {
 
   const onImageSet = () => {
     updateSessionInfo();
-    seedSection.hidden = !getImage()?.dataUrl;
+    const img = getImage();
+    seedSection.hidden = !img?.dataUrl;
+    if (img?.dataUrl) {
+      currentRefImg.src = img.dataUrl;
+      currentRefWrap.hidden = false;
+    }
     renderDrawingsGrid();
   };
   const onDrawingUpdate = () => {

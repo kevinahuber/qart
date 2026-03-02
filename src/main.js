@@ -3,6 +3,7 @@ import { renderDraw } from './drawing.js';
 import { renderMosaic } from './mosaic.js';
 import { renderQR } from './qr-page.js';
 import { renderAdmin } from './admin.js';
+import { renderAbout } from './about.js';
 import { renderLanding } from './landing.js';
 
 const app = document.getElementById('main');
@@ -78,6 +79,7 @@ function setupSessionApp() {
     if (hash === 'mosaic') currentCleanup = renderMosaic(app);
     if (hash === 'qr')     currentCleanup = renderQR(app);
     if (hash === 'admin')  currentCleanup = renderAdmin(app);
+    if (hash === 'about')  currentCleanup = renderAbout(app);
   }
 
   window.addEventListener('hashchange', navigate);

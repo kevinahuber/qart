@@ -205,15 +205,29 @@ export function renderMosaic(container) {
   wrap.addEventListener('click', () => { location.hash = '#draw'; });
 
   // Defer initial render so wrap has been laid out and clientHeight is valid
-  requestAnimationFrame(renderGrid);
+  // If store already has drawings (navigated here after init), start autoplay
+  requestAnimationFrame(() => {
+    const existing = getDrawings();
+    if (existing.length > 0 || getImage()) {
+      storeReady = true;
+      slider.value = '0';
+      renderGrid();
+      startAutoPlay();
+    } else {
+      renderGrid();
+    }
+  });
 
   const onInit = () => {
     storeReady = true;
-    slider.value = '0'; // start from black, auto-play will reveal
+    slider.value = '0';
     renderGrid();
     startAutoPlay();
   };
-  const onUpdate = () => renderGrid();
+  const onUpdate = () => {
+    renderGrid();
+    startAutoPlay();
+  };
   window.addEventListener('qart:init', onInit);
   window.addEventListener('qart:new-drawing', onUpdate);
   window.addEventListener('qart:cleared', onUpdate);
