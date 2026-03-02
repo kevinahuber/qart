@@ -29,6 +29,16 @@ const MIME = {
 
 fs.mkdirSync(path.join(DATA_DIR, 'sessions'), { recursive: true });
 
+// Migrate old DB filename if present
+const OLD_DB_PATH = path.join(DATA_DIR, 'qart.db');
+if (!fs.existsSync(DB_PATH) && fs.existsSync(OLD_DB_PATH)) {
+  fs.renameSync(OLD_DB_PATH, DB_PATH);
+  // Also rename WAL/SHM files if they exist
+  for (const ext of ['-wal', '-shm']) {
+    if (fs.existsSync(OLD_DB_PATH + ext)) fs.renameSync(OLD_DB_PATH + ext, DB_PATH + ext);
+  }
+}
+
 // ── SQLite ────────────────────────────────────────────────────────────────────
 
 const db = new Database(DB_PATH);
